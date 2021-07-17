@@ -1,15 +1,85 @@
 package com.company;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import static com.company.Operations.*;
+
+//import static com.company.Operations.Denial;
 
 public class Main {
+
+
+    static HashMap<String, Boolean> facts = new HashMap<>();
+
+
+    public static void CreateFacts()
+    {
+        char a = 'A';
+
+        while (a <= 'Z')
+        {
+            facts.put(String.valueOf(a), false);
+            a++;
+        }
+
+    }
 
     public static void main(String[] args) {
 
         ArrayList<Node> graph =  new ArrayList<>();
         Node f = new AtomNode();
         graph.add(f);
-        PolishNotation("A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D) ");
+        CreateFacts();
+        PolishNotation("D + !A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D) ");
+    }
+
+    public static boolean Solver(ArrayList<PolishRec>  rec)
+    {
+        boolean f;
+        ArrayList<Boolean>  stack =  new ArrayList<>();
+        int i = 0;
+
+        for (PolishRec s : rec)
+        {
+            i = stack.size() - 1;
+            if (s.rec.toCharArray()[0] >= 'A' && s.rec.toCharArray()[0] <= 'Z')
+            {
+                    stack.add(facts.get(s.rec));
+            }
+            else
+            {
+                if (s.rec == "!")
+                    stack.set(i, Not(stack.get(i)));
+                else if (s.rec == "+")
+                {
+                    stack.set(i - 1, And(stack.get(i - 1), stack.get(i)));
+                    stack.remove(i);
+                }
+                else if (s.rec == "|")
+                {
+                    stack.set(i - 1, Or(stack.get(i - 1), stack.get(i)));
+                    stack.remove(i);
+                }
+                else if (s.rec == "^")
+                {
+                    stack.set(i - 1, Xor(stack.get(i - 1), stack.get(i)));
+                    stack.remove(i);
+                }
+                else if (s.rec == "=>")
+                {
+                    stack.set(i - 1, Imp(stack.get(i - 1), stack.get(i)));
+                    stack.remove(i);
+                }
+                else if (s.rec == "<=>")
+                {
+                    stack.set(i - 1, Eqv(stack.get(i - 1), stack.get(i)));
+                    stack.remove(i);
+                }
+            }
+
+
+        }
+         return stack.get(0);
     }
 
 
@@ -80,7 +150,8 @@ public class Main {
         }
         for (PolishRec ss : rec)
             System.out.print(ss.rec);
-        parsingTree(rec);
+        boolean fs = Solver(rec);
+        System.out.println(fs);
 
 
     }
