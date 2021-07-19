@@ -19,7 +19,8 @@ public class Main {
         if (args.length == 0) {
             System.out.println("No input file");
         }
-        Optional<LinkedList<String>> lines = Optional.of(getLines(args[0]));
+        runParserExample();
+        //Optional<LinkedList<String>> lines = Optional.of(getLines(args[0]));
     }
 
     public static LinkedList<String> getLines(String filePath) {
