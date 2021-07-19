@@ -19,8 +19,11 @@ public class Main {
         if (args.length == 0) {
             System.out.println("No input file");
         }
-        runParserExample();
+        //runParserExample();
         //Optional<LinkedList<String>> lines = Optional.of(getLines(args[0]));
+
+        Solver.PolishNotation("D + !A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D) ");
+
     }
 
     public static LinkedList<String> getLines(String filePath) {
@@ -35,6 +38,8 @@ public class Main {
         }
         return lines;
     }
+
+
 
     public static void runParserExample() {
         String input = "1+2-3";
