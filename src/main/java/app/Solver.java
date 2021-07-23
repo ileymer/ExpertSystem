@@ -1,5 +1,7 @@
 package app;
 
+import models.Operations;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -17,6 +19,7 @@ public class Solver {
         {
             facts.put(String.valueOf(a), false);
             a++;
+
         }
 
     }
@@ -188,7 +191,7 @@ public class Solver {
     public static Node parsingTree(ArrayList<PolishRec>  r)
     {
         int size;
-        int p;
+        int p; 
         int sizeS = 0;
         //ArrayList <Integer> stack = new ArrayList<>();
         Node tree = new Node();

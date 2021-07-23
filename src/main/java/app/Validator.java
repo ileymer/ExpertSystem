@@ -66,7 +66,7 @@ public class Validator {
                     return false;
                 }
                 if (isValidLineSyntax(line, counter)){
-                    return false;
+                    return true;
                 }
             }
         }

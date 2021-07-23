@@ -1,5 +1,7 @@
 package app;
 
+import models.ExpertSystem;
+import models.Rule;
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParseTreeUtils;
@@ -8,6 +10,7 @@ import org.parboiled.support.ParsingResult;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,10 +22,18 @@ public class Main {
         if (args.length == 0) {
             System.out.println("No input file");
         }
-        //runParserExample();
-        //Optional<LinkedList<String>> lines = Optional.of(getLines(args[0]));
+        LinkedList<String>lines = getLines(args[0]);
+        ExpertSystem expertSystem = new ExpertSystem(lines);
+        expertSystem.run();
 
-        Solver.PolishNotation("D + !A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D) ");
+        /*
+        for (Rule rule : rules) {
+            System.out.println(rule.string);
+            //System.out.println(Solver.PolishNotation(line));
+        }
+
+         */
+        //Solver.PolishNotation("D + !A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D) ");
 
     }
 
@@ -30,11 +41,14 @@ public class Main {
         LinkedList<String> lines = null;
 
         try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
-            stream.map(line -> line.split("#")[0].trim());
-            lines = stream.collect(Collectors.toCollection(LinkedList::new));
-            Validator.validate(lines);
+            lines = stream
+                    .map(line -> line.split("#")[0].trim())
+                    .filter(line -> !line.equals(""))
+                    .collect(Collectors.toCollection(LinkedList::new));
+            //Validator.validate(lines);
         } catch (IOException e) {
             System.out.println("Can't read file");
+            System.exit(-1);
         }
         return lines;
     }
