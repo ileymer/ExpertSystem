@@ -1,7 +1,5 @@
 package app;
 
-import com.sun.xml.internal.ws.api.ha.StickyFeature;
-
 public class Fact {
     private String name;
     private boolean value;

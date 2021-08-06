@@ -47,6 +47,7 @@ public class Solver {
         {
             facts.put(String.valueOf(a), Tristate.UNDEF);
             a++;
+
         }
         return facts;
     }
@@ -247,7 +248,7 @@ public class Solver {
     public static Node parsingTree(ArrayList<PolishRec>  r)
     {
         int size;
-        int p;
+        int p; 
         int sizeS = 0;
         //ArrayList <Integer> stack = new ArrayList<>();
         Node tree = new Node();

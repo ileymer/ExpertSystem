@@ -1,14 +1,15 @@
 package app;
 
+
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
-import sun.awt.image.ImageWatched;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,17 +21,13 @@ public class Main {
         if (args.length == 0) {
             System.out.println("No input file");
         }
+
         //runParserExample();
         LinkedList<Rule> rules;
-
         //LinkedList<String> lines = getLines(args[0]).orElse(new LinkedList<>());
-        //rules = getRules(lines).orElse(new LinkedList<Rule>());
-
         //Solver.PolishNotation("D + !A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D) ");
         rules = getRules(testLines()).orElse(new LinkedList<>());
-
         Solver.run(rules);
-
     }
 
     public static LinkedList<String> testLines() {
@@ -46,11 +43,14 @@ public class Main {
         LinkedList<String> lines = null;
 
         try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
-            stream.map(line -> line.split("#")[0].trim());
-            lines = stream.collect(Collectors.toCollection(LinkedList::new));
-            Validator.validate(lines);
+            lines = stream
+                    .map(line -> line.split("#")[0].trim())
+                    .filter(line -> !line.equals(""))
+                    .collect(Collectors.toCollection(LinkedList::new));
+            //Validator.validate(lines);
         } catch (IOException e) {
             System.out.println("Can't read file");
+            System.exit(-1);
         }
         return Optional.of(lines);
     }
