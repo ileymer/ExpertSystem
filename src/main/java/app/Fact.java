@@ -7,9 +7,16 @@ public class Fact {
     private boolean value;
     private boolean defined;
 
+    private Tristate state;
+
+
     public Fact() {
         value = false;
         defined = false;
+    }
+
+    public Fact(Tristate state) {
+        this.state = state;
     }
 
     public void define(boolean value) {

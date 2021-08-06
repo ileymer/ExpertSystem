@@ -4,6 +4,7 @@ import org.parboiled.Parboiled;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
+import sun.awt.image.ImageWatched;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,13 +21,28 @@ public class Main {
             System.out.println("No input file");
         }
         //runParserExample();
-        //Optional<LinkedList<String>> lines = Optional.of(getLines(args[0]));
+        LinkedList<Rule> rules;
 
-        Solver.PolishNotation("D + !A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D) ");
+        //LinkedList<String> lines = getLines(args[0]).orElse(new LinkedList<>());
+        //rules = getRules(lines).orElse(new LinkedList<Rule>());
+
+        //Solver.PolishNotation("D + !A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D) ");
+        rules = getRules(testLines()).orElse(new LinkedList<>());
+
+        Solver.run(rules);
 
     }
 
-    public static LinkedList<String> getLines(String filePath) {
+    public static LinkedList<String> testLines() {
+        LinkedList<String> lines = new LinkedList<>();
+
+        lines.add("!D => C");
+
+
+        return lines;
+    }
+
+    public static Optional<LinkedList<String>> getLines(String filePath) {
         LinkedList<String> lines = null;
 
         try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
@@ -36,9 +52,14 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Can't read file");
         }
-        return lines;
+        return Optional.of(lines);
     }
 
+    public static Optional<LinkedList<Rule>> getRules(LinkedList<String> lines) {
+        LinkedList<Rule> rules = new LinkedList<>();
+        lines.stream().forEach(line -> rules.add(new Rule(line)));
+        return Optional.of(rules);
+    }
 
 
     public static void runParserExample() {

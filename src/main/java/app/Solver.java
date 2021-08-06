@@ -2,23 +2,85 @@ package app;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class Solver {
+    static HashMap<String, Tristate> facts = createFacts();
+
+    public static boolean isFact(String fact) {
+        return fact.charAt(0) >= 'A' && fact.charAt(0) <= 'Z';
+    }
+
+    public static boolean isFact(char fact) {
+        return fact >= 'A' && fact <= 'Z';
+    }
 
 
-    static HashMap<String, Boolean> facts = new HashMap<>();
+    public static HashMap<String, Fact> getFactsFromLine(String line) {
+        HashMap<String, Fact> facts = new HashMap<>();
+
+        for (char c : line.toCharArray()) {
+            if (isFact(c)) {
+                facts.put(String.valueOf(c), new Fact(Tristate.UNDEF));
+            }
+        }
+        return facts;
+    }
 
 
-    public static void createFacts()
+
+    private static boolean isAllFactsDefines(String left) {
+        for (String key : getFactsFromLine(left).keySet()) {
+            if (facts.get(key) == Tristate.UNDEF) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static HashMap<String, Tristate> createFacts()
     {
+        HashMap<String, Tristate> facts = new HashMap<>();
         char a = 'A';
 
-        while (a <= 'Z')
+        while (a <= 'K')
         {
-            facts.put(String.valueOf(a), false);
+            facts.put(String.valueOf(a), Tristate.UNDEF);
             a++;
         }
+        return facts;
+    }
 
+    public static void printFacts(HashMap<String, Tristate> facts) {
+        facts.forEach((k, v) -> System.out.println(String.format("%s: %s", k, v)));
+    }
+
+    private boolean isTrueImplication(boolean left, boolean right) {
+        return !(left == true && right == false);
+    }
+
+    private boolean isTrueIfAndOnlyIf(boolean left, boolean right) {
+        return left == right;
+    }
+
+    public static void run(LinkedList<Rule> rules) {
+        boolean cycle = true;
+        HashMap<String, Tristate> temp = new HashMap<>(facts);
+
+        while (cycle) {
+            rules.stream().forEach(x -> {
+                Node node = parsingTree(x.leftPart);
+                if (x.type == EquityType.IMPLICATION && isAllFactsDefines(x.leftPartString)) {
+                    System.out.println(node);
+                    solve(x.leftPart);
+                    if (!x.onlyLeft) {
+                        solve(x.rightPart);
+                    }
+                }});
+            if (facts.equals(temp)) { break; }
+            temp = new HashMap<>(facts);
+        }
+        printFacts(facts);
     }
 
     public static boolean solve(ArrayList<PolishRec>  rec)
@@ -31,7 +93,7 @@ public class Solver {
             i = stack.size() - 1;
             if (s.rec.toCharArray()[0] >= 'A' && s.rec.toCharArray()[0] <= 'Z')
             {
-                stack.add(facts.get(s.rec));
+                stack.add(facts.get(s.rec).toBoolean());
             }
             else
             {
@@ -70,7 +132,7 @@ public class Solver {
 
 
 
-    public static void PolishNotation(String rule)
+    public static ArrayList<PolishRec> PolishNotation(String rule)
     {
         ArrayList<PolishRec>  rec =  new ArrayList<>();
         ArrayList<String>  stack =  new ArrayList<>();
@@ -132,10 +194,7 @@ public class Solver {
             rec.add(strPolish(stack.get(sizeS)));
             stack.remove(sizeS--);
         }
-        for (PolishRec ss : rec)
-            System.out.print(ss.rec);
-        boolean fs = Solver.solve(rec);
-        System.out.println(fs);
+        return rec;
     }
 
     public static String addOperation(char c)
