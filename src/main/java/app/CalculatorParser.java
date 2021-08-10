@@ -7,28 +7,41 @@ import org.parboiled.annotations.BuildParseTree;
 @BuildParseTree
 class CalculatorParser extends BaseParser<Object> {
 
+
     Rule Expression() {
         return Sequence(
-                Term(),
-                ZeroOrMore(AnyOf("+-"), Term())
+                Line(),
+                EquityOperator(),
+                Line()
         );
+    }
+
+    Rule EquityOperator() {
+        return FirstOf("<=>", "=>");
+    }
+
+    Rule Operator() {
+        return FirstOf("^", "+", "|");
+    }
+
+
+    Rule Line() {
+        return Sequence(
+                Term(),
+                ZeroOrMore(Operator(), Term())
+        );
+
     }
 
     Rule Term() {
-        return Sequence(
-                Factor(),
-                ZeroOrMore(AnyOf("*/"), Factor())
-        );
-    }
-
-    Rule Factor() {
         return FirstOf(
-                Number(),
-                Sequence('(', Expression(), ')')
+                VariableWithNegative(),
+                Sequence('(', Line(), ')')
         );
     }
 
-    Rule Number() {
-        return OneOrMore(CharRange('0', '9'));
+    Rule VariableWithNegative() {
+        return Sequence(Optional(Ch('!')), CharRange('A', 'Z'));
     }
+
 }

@@ -22,7 +22,7 @@ public class Main {
             System.out.println("No input file");
         }
 
-        //runParserExample();
+        runParserExample();
         LinkedList<Rule> rules;
         //LinkedList<String> lines = getLines(args[0]).orElse(new LinkedList<>());
         //Solver.PolishNotation("D + !A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D) ");
@@ -63,7 +63,7 @@ public class Main {
 
 
     public static void runParserExample() {
-        String input = "1+2-3";
+        String input = "A+B+C=>B+C";
         CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
         ParsingResult<?> result = new ReportingParseRunner(parser.Expression()).run(input);
         String parseTreePrintOut = ParseTreeUtils.printNodeTree(result);
