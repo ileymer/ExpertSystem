@@ -1,14 +1,16 @@
-package app;
+package model;
+
+import solver.Solver;
 
 import java.util.ArrayList;
 
 public class Rule {
-    ArrayList <PolishRec> leftPart;
-    ArrayList <PolishRec> rightPart;
-    String leftPartString;
-    String rightPartString;
-    boolean onlyLeft;
-    EquityType type;
+    public ArrayList <PolishRec> leftPart;
+    public ArrayList <PolishRec> rightPart;
+    public String leftPartString;
+    public String rightPartString;
+    public boolean onlyLeft;
+    public EquityType type;
 
     public Rule(String line) {
         if (line.contains("<=>") || line.contains("=>")) {

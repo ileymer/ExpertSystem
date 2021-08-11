@@ -1,4 +1,4 @@
-package app;
+package model;
 
 public class Fact {
     private String name;

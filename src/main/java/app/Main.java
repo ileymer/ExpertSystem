@@ -2,9 +2,8 @@ package app;
 
 
 import org.parboiled.Parboiled;
-import org.parboiled.parserunners.ReportingParseRunner;
-import org.parboiled.support.ParseTreeUtils;
-import org.parboiled.support.ParsingResult;
+import model.Rule;
+import solver.Solver;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -62,12 +61,12 @@ public class Main {
     }
 
 
+
     public static void runParserExample() {
-        String input = "A+B+C=>B+C";
-        CalculatorParser parser = Parboiled.createParser(CalculatorParser.class);
-        ParsingResult<?> result = new ReportingParseRunner(parser.Expression()).run(input);
-        String parseTreePrintOut = ParseTreeUtils.printNodeTree(result);
-        System.out.println(parseTreePrintOut);
+        String input = "A+B+C=>B+C+";
+        RuleParser parser = new RuleParser(Parboiled.createParser(RuleParser.class));
+        String parsed =  parser.getRule(input);
+        System.out.println(parsed);
         System.exit(0);
     }
 

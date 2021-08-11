@@ -1,4 +1,6 @@
-package app;
+package solver;
+
+import model.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;

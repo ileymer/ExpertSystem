@@ -1,4 +1,4 @@
-package app;
+package model;
 
 public enum Tristate {
     TRUE,
