@@ -46,7 +46,7 @@ public class Main {
                 }
             }
         });
-        return facts.
+        return (LinkedList<String>)facts.stream().collect(Collectors.toList());
     }
 
     public static LinkedList<String> testLines() {
