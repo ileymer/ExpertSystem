@@ -20,11 +20,11 @@ public class Main {
         if (args.length == 0) {
             System.out.println("No input file");
         }
-
         runParserExample();
         LinkedList<Rule> rules;
         //LinkedList<String> lines = getLines(args[0]).orElse(new LinkedList<>());
-        //Solver.PolishNotation("D + !A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D) ");
+        //"D + !A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D);
+
         rules = getRules(testLines()).orElse(new LinkedList<>());
         Solver.run(rules);
     }
@@ -60,10 +60,8 @@ public class Main {
         return Optional.of(rules);
     }
 
-
-
     public static void runParserExample() {
-        String input = "A+B+C=>B+C+";
+        String input = "A+B+C=>B+C";
         RuleParser parser = new RuleParser(Parboiled.createParser(RuleParser.class));
         String parsed =  parser.getRule(input);
         System.out.println(parsed);

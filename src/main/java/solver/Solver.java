@@ -86,9 +86,9 @@ public class Solver {
         printFacts(facts);
     }
 
-    public static boolean solve(ArrayList<PolishRec>  rec)
+    public static Tristate solve(ArrayList<PolishRec>  rec)
     {
-        ArrayList<Boolean>  stack =  new ArrayList<>();
+        ArrayList<Tristate>  stack =  new ArrayList<>();
         int i = 0;
 
         for (PolishRec s : rec)
@@ -96,7 +96,7 @@ public class Solver {
             i = stack.size() - 1;
             if (s.rec.toCharArray()[0] >= 'A' && s.rec.toCharArray()[0] <= 'Z')
             {
-                stack.add(facts.get(s.rec).toBoolean());
+                stack.add(facts.get(s.rec));
             }
             else
             {
