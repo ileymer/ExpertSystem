@@ -8,14 +8,19 @@ import java.util.LinkedList;
 
 public class Solver {
     static HashMap<String, Tristate> facts = createFacts();
+    HashMap<String, Tristate> queries;
+    HashMap<String, Tristate> rules;
 
-    public static boolean isFact(String fact) {
-        return fact.charAt(0) >= 'A' && fact.charAt(0) <= 'Z';
+    public Solver() {
     }
 
-    public static boolean isFact(char fact) {
-        return fact >= 'A' && fact <= 'Z';
+    public Solver(HashMap<String, Tristate> rules, HashMap<String, Tristate> allFacts,
+                  HashMap<String, Tristate> initFacts,
+                  HashMap<String, Tristate> queries) {
+        ;
     }
+
+
 
 
     public static HashMap<String, Fact> getFactsFromLine(String line) {

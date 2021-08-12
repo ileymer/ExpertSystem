@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,8 +28,25 @@ public class Main {
         //"D + !A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D);
 
         rules = getRules(lines).orElse(new LinkedList<>());
+        LinkedList<String> allFacts = getAllFacts(rules);
+        LinkedList<String> initFacts = getInitFacts(lines);
+        LinkedList<String> queries = getQueries(lines);
+        Solver solver = new Solver(init_facts, rules, queries, aaFacts);
         Solver.run(rules);
 
+    }
+
+    public static LinkedList<String> getAllFacts(LinkedList<String> lines) {
+        HashSet<String> facts = new HashSet<>();
+
+        lines.stream().forEach(line -> {
+            for (char c: line.toCharArray()) {
+                if (Utils.isFact(c)) {
+                    facts.add(String.valueOf(c));
+                }
+            }
+        });
+        return facts.
     }
 
     public static LinkedList<String> testLines() {
