@@ -5,6 +5,7 @@ import org.parboiled.Parboiled;
 import model.Rule;
 import solver.Solver;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -20,13 +21,14 @@ public class Main {
         if (args.length == 0) {
             System.out.println("No input file");
         }
-        runParserExample();
+        //runParserExample();
         LinkedList<Rule> rules;
-        //LinkedList<String> lines = getLines(args[0]).orElse(new LinkedList<>());
+        LinkedList<String> lines = getLines(args[0]).orElse(new LinkedList<>());
         //"D + !A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D);
 
-        rules = getRules(testLines()).orElse(new LinkedList<>());
+        rules = getRules(lines).orElse(new LinkedList<>());
         Solver.run(rules);
+
     }
 
     public static LinkedList<String> testLines() {
@@ -41,12 +43,13 @@ public class Main {
     public static Optional<LinkedList<String>> getLines(String filePath) {
         LinkedList<String> lines = null;
 
+
         try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
             lines = stream
                     .map(line -> line.split("#")[0].trim())
                     .filter(line -> !line.equals(""))
                     .collect(Collectors.toCollection(LinkedList::new));
-            //Validator.validate(lines);
+            Validator.validate(lines);
         } catch (IOException e) {
             System.out.println("Can't read file");
             System.exit(-1);

@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Fact {
     private String name;
     private boolean value;
@@ -11,6 +13,7 @@ public class Fact {
     public Fact() {
         value = false;
         defined = false;
+        ArrayList<ArrayList<PolishRec>> definers;
     }
 
     public Fact(Tristate state) {

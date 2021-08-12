@@ -66,27 +66,34 @@ public class Solver {
         return left == right;
     }
 
+    /*
+    private static void solveRule(Rule rule, HashMap<String, Tristate> temp) {
+        Node node = parsingTree(x.leftPart);
+        if (x.type == EquityType.IMPLICATION && isAllFactsDefines(x.leftPartString)) {
+            System.out.println(node);
+            solve(x.leftPart);
+            if (!x.onlyLeft) {
+                solve(x.rightPart);
+            }
+        }});
+    }
+*/
     public static void run(LinkedList<Rule> rules) {
         boolean cycle = true;
         HashMap<String, Tristate> temp = new HashMap<>(facts);
 
+
         while (cycle) {
-            rules.stream().forEach(x -> {
-                Node node = parsingTree(x.leftPart);
-                if (x.type == EquityType.IMPLICATION && isAllFactsDefines(x.leftPartString)) {
-                    System.out.println(node);
-                    solve(x.leftPart);
-                    if (!x.onlyLeft) {
-                        solve(x.rightPart);
-                    }
-                }});
-            if (facts.equals(temp)) { break; }
+            rules.stream().forEach(x -> {solve(x.leftPart);});
+            if (facts.equals(temp)) {
+                break;
+            }
             temp = new HashMap<>(facts);
         }
         printFacts(facts);
     }
 
-    public static Tristate solve(ArrayList<PolishRec>  rec)
+    public static Tristate solve(ArrayList<PolishRec> rec)
     {
         ArrayList<Tristate>  stack =  new ArrayList<>();
         int i = 0;
