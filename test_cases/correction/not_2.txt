@@ -1,0 +1,8 @@
+!C => C
+B + C => A
+
+=CB
+
+?A 
+
+# A is true
