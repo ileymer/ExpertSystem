@@ -64,7 +64,10 @@ public class Main {
 
         try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
             lines = stream
-                    .map(line -> line.split("#")[0].trim())
+                    .map(line -> line.split("#")[0]
+                            .trim()
+                            .replace(" ", "")
+                            .replace("\t", ""))
                     .filter(line -> !line.equals(""))
                     .collect(Collectors.toCollection(LinkedList::new));
             Validator.validate(lines);

@@ -26,7 +26,7 @@ public class Validator {
             return false;
         }
         if (lines.get(lines.size() - 2).charAt(0) != '=') {
-            System.out.println("last line must be facts row and starts with =");
+            System.out.println("line before last must be facts row and starts with =");
             return false;
         }
         return true;
