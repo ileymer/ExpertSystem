@@ -20,9 +20,6 @@ public class Solver {
         ;
     }
 
-
-
-
     public static HashMap<String, Fact> getFactsFromLine(String line) {
         HashMap<String, Fact> facts = new HashMap<>();
 
