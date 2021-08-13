@@ -1,5 +1,6 @@
 package model;
 
+import app.Utils;
 import solver.Solver;
 
 import java.util.ArrayList;
@@ -19,12 +20,12 @@ public class Rule {
             onlyLeft = false;
             leftPartString = splitted[0];
             rightPartString = splitted[1];
-            leftPart = Solver.PolishNotation(splitted[0]);
-            rightPart = Solver.PolishNotation(splitted[1]);
+            leftPart = Utils.PolishNotation(splitted[0]);
+            rightPart = Utils.PolishNotation(splitted[1]);
         }
         else {
             onlyLeft = true;
-            leftPart = Solver.PolishNotation(line);
+            leftPart = Utils.PolishNotation(line);
             leftPartString = line;
         }
     }

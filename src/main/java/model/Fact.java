@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class Fact {
     private String name;
-    private boolean defined;
+    public boolean defined;
 
-    private Tristate state;
+    public Tristate state;
 
 
     public Fact() {

@@ -34,7 +34,7 @@ public class Solver {
 
     private boolean isAllFactsDefines(String left) {
         for (String key : getFactsFromLine(left).keySet()) {
-            if (facts.get(key) == Tristate.UNDEF) {
+            if (facts.get(key).state == Tristate.UNDEF) {
                 return false;
             }
         }
@@ -43,8 +43,8 @@ public class Solver {
 
 
 
-    public void printFacts(HashMap<String, Tristate> facts) {
-        facts.forEach((k, v) -> System.out.println(String.format("%s: %s", k, v)));
+    public void printFacts(HashMap<String, Fact> facts) {
+        facts.forEach((k, v) -> System.out.println(String.format("%s: %s", k, v.state)));
     }
 
     private boolean isTrueImplication(boolean left, boolean right) {
@@ -69,7 +69,7 @@ public class Solver {
 */
     public void run() {
         boolean cycle = true;
-        HashMap<String, Tristate> temp = new HashMap<>(facts);
+        HashMap<String, Fact> temp = new HashMap<>(facts);
 
 
         while (cycle) {
@@ -92,7 +92,7 @@ public class Solver {
             i = stack.size() - 1;
             if (s.rec.toCharArray()[0] >= 'A' && s.rec.toCharArray()[0] <= 'Z')
             {
-                stack.add(facts.get(s.rec));
+                stack.add(facts.get(s.rec).state);
             }
             else
             {
@@ -131,117 +131,9 @@ public class Solver {
 
 
 
-    public ArrayList<PolishRec> PolishNotation(String rule)
-    {
-        ArrayList<PolishRec>  rec =  new ArrayList<>();
-        ArrayList<String>  stack =  new ArrayList<>();
-
-        int i = 0;
-        int f = 0;
-        int sizeS = 0;
-        int size = rule.length();
-        char []s = rule.toCharArray();
-
-        while (i < size)
-        {
-            if (s[i] != ' ')
-            {
-                sizeS = stack.size() - 1;
-                if (s[i] >= 'A' && s[i] <= 'Z')
-                    rec.add(strPolish(Character.toString(s[i])));
-                else if (s[i] == '(')
-                    stack.add("(");
-                else if (s[i] == ')')
-                {
-                    while (stack.get(sizeS) != "(") {
-                        rec.add(strPolish(stack.get(sizeS)));
-                        stack.remove(sizeS--);
-                    }
-                    stack.remove(sizeS);
-                }
-                else if (sizeS < 0)
-                    stack.add(addOperation(s[i]));
-                else
-                {
-                    if (prioritet(s[i]) > prioritet(stack.get(sizeS).toCharArray()[0]))
-                    {
-                        stack.add(addOperation(s[i]));
-                    }
-                    else
-                    {
-                        while (sizeS > -1 && prioritet(s[i]) <= prioritet(stack.get(sizeS).toCharArray()[0]))
-                        {
-                            rec.add(strPolish(stack.get(sizeS)));
-                            stack.remove(sizeS--);
-                        }
-                        stack.add(addOperation(s[i]));
-                    }
-                }
-                if (s[i] == '<')
-                    i=+3;
-                else if (s[i] == '=')
-                    i=+2;
-                else
-                    i++;
-            }
-            else
-                i++;
-        }
-        sizeS = stack.size() - 1;
-        while (sizeS > -1)
-        {
-            rec.add(strPolish(stack.get(sizeS)));
-            stack.remove(sizeS--);
-        }
-        return rec;
-    }
-
-    public String addOperation(char c)
-    {
-        if (c == '!')
-            return ("!");
-        else if (c == '+')
-            return ("+");
-        else if (c == '|')
-            return ("|");
-        else if (c == '^')
-            return ("^");
-        else if (c == '=')
-            return ("=>");
-        else if (c == '<')
-            return ("<=>");
-        return ("");
-    }
-
-
-    public int prioritet(char c)
-    {
-        if (c == '!')
-            return (4);
-        else if (c == '+')
-            return (3);
-        else if (c == '|')
-            return (2);
-        else if (c == '^')
-            return (2);
-        else if (c == '=')
-            return (1);
-        else if (c == '<')
-            return (1);
-        else if (c == '(')
-            return (1);
-        return (0);
-    }
 
 
 
-    public PolishRec strPolish(String s)
-    {
-        PolishRec rec = new PolishRec();
-
-        rec.rec = s;
-        return (rec);
-    }
     //ab*cde!*f*!*+r@r@f=f=f=f=fehr+t=t=!*+=g=
     public Node parsingTree(ArrayList<PolishRec>  r)
     {
