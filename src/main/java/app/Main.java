@@ -10,9 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,12 +26,41 @@ public class Main {
         //"D + !A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D);
 
         rules = getRules(lines).orElse(new LinkedList<>());
-        LinkedList<String> allFacts = getAllFacts(rules);
+        LinkedList<String> allFacts = getAllFacts(lines);
         LinkedList<String> initFacts = getInitFacts(lines);
         LinkedList<String> queries = getQueries(lines);
-        Solver solver = new Solver(init_facts, rules, queries, aaFacts);
+        Solver solver = new Solver(rules, allFacts, initFacts, queries);
         Solver.run(rules);
+    }
 
+    public static LinkedList<String> getQueries(LinkedList<String> lines) {
+        LinkedList<String> queries = new LinkedList<>();
+
+        for (String line : lines) {
+            if (line.contains("?")) {
+                line = line.split("\\?")[1];
+                for (char c : line.toCharArray()) {
+                    queries.add(String.valueOf(c));
+                }
+                break;
+            }
+        }
+        return queries;
+    }
+
+    public static LinkedList<String> getInitFacts(LinkedList<String> lines) {
+        LinkedList<String> initFacts = new LinkedList<>();
+
+        for (String line : lines) {
+            if (line.contains("=")) {
+                line = line.split("=")[1];
+                for (char c : line.toCharArray()) {
+                    initFacts.add(String.valueOf(c));
+                }
+                break;
+            }
+        }
+        return initFacts;
     }
 
     public static LinkedList<String> getAllFacts(LinkedList<String> lines) {
@@ -91,5 +118,4 @@ public class Main {
         System.out.println(parsed);
         System.exit(0);
     }
-
 }

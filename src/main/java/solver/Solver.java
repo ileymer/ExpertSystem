@@ -1,5 +1,6 @@
 package solver;
 
+import app.Utils;
 import model.*;
 
 import java.util.ArrayList;
@@ -14,9 +15,9 @@ public class Solver {
     public Solver() {
     }
 
-    public Solver(HashMap<String, Tristate> rules, HashMap<String, Tristate> allFacts,
-                  HashMap<String, Tristate> initFacts,
-                  HashMap<String, Tristate> queries) {
+    public Solver(LinkedList<Rule> rules, LinkedList<String> allFacts,
+                  LinkedList<String> initFacts,
+                  LinkedList<String> queries) {
         ;
     }
 
@@ -24,7 +25,7 @@ public class Solver {
         HashMap<String, Fact> facts = new HashMap<>();
 
         for (char c : line.toCharArray()) {
-            if (isFact(c)) {
+            if (Utils.isFact(c)) {
                 facts.put(String.valueOf(c), new Fact(Tristate.UNDEF));
             }
         }
