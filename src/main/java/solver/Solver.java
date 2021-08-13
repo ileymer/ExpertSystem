@@ -3,25 +3,25 @@ package solver;
 import app.Utils;
 import model.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 public class Solver {
-    static HashMap<String, Tristate> facts = createFacts();
-    HashMap<String, Tristate> queries;
-    HashMap<String, Tristate> rules;
+    HashMap<String, Fact> facts;
+    LinkedList<String> queries;
+    LinkedList<Rule> rules;
+    FileContent fileContent;
 
-    public Solver() {
+    public Solver(FileContent fileContent) {
+        this.fileContent = fileContent;
+        rules = fileContent.rules;
+        queries = fileContent.queries;
+        facts = fileContent.getFacts();
     }
 
-    public Solver(LinkedList<Rule> rules, LinkedList<String> allFacts,
-                  LinkedList<String> initFacts,
-                  LinkedList<String> queries) {
-        ;
-    }
-
-    public static HashMap<String, Fact> getFactsFromLine(String line) {
+    public HashMap<String, Fact> getFactsFromLine(String line) {
         HashMap<String, Fact> facts = new HashMap<>();
 
         for (char c : line.toCharArray()) {
@@ -32,9 +32,7 @@ public class Solver {
         return facts;
     }
 
-
-
-    private static boolean isAllFactsDefines(String left) {
+    private boolean isAllFactsDefines(String left) {
         for (String key : getFactsFromLine(left).keySet()) {
             if (facts.get(key) == Tristate.UNDEF) {
                 return false;
@@ -43,21 +41,9 @@ public class Solver {
         return true;
     }
 
-    public static HashMap<String, Tristate> createFacts()
-    {
-        HashMap<String, Tristate> facts = new HashMap<>();
-        char a = 'A';
 
-        while (a <= 'K')
-        {
-            facts.put(String.valueOf(a), Tristate.UNDEF);
-            a++;
 
-        }
-        return facts;
-    }
-
-    public static void printFacts(HashMap<String, Tristate> facts) {
+    public void printFacts(HashMap<String, Tristate> facts) {
         facts.forEach((k, v) -> System.out.println(String.format("%s: %s", k, v)));
     }
 
@@ -70,7 +56,7 @@ public class Solver {
     }
 
     /*
-    private static void solveRule(Rule rule, HashMap<String, Tristate> temp) {
+    private void solveRule(Rule rule, HashMap<String, Tristate> temp) {
         Node node = parsingTree(x.leftPart);
         if (x.type == EquityType.IMPLICATION && isAllFactsDefines(x.leftPartString)) {
             System.out.println(node);
@@ -81,7 +67,7 @@ public class Solver {
         }});
     }
 */
-    public static void run(LinkedList<Rule> rules) {
+    public void run() {
         boolean cycle = true;
         HashMap<String, Tristate> temp = new HashMap<>(facts);
 
@@ -96,7 +82,7 @@ public class Solver {
         printFacts(facts);
     }
 
-    public static Tristate solve(ArrayList<PolishRec> rec)
+    public Tristate solve(ArrayList<PolishRec> rec)
     {
         ArrayList<Tristate>  stack =  new ArrayList<>();
         int i = 0;
@@ -145,7 +131,7 @@ public class Solver {
 
 
 
-    public static ArrayList<PolishRec> PolishNotation(String rule)
+    public ArrayList<PolishRec> PolishNotation(String rule)
     {
         ArrayList<PolishRec>  rec =  new ArrayList<>();
         ArrayList<String>  stack =  new ArrayList<>();
@@ -210,7 +196,7 @@ public class Solver {
         return rec;
     }
 
-    public static String addOperation(char c)
+    public String addOperation(char c)
     {
         if (c == '!')
             return ("!");
@@ -228,7 +214,7 @@ public class Solver {
     }
 
 
-    public static int prioritet(char c)
+    public int prioritet(char c)
     {
         if (c == '!')
             return (4);
@@ -249,7 +235,7 @@ public class Solver {
 
 
 
-    public static PolishRec strPolish(String s)
+    public PolishRec strPolish(String s)
     {
         PolishRec rec = new PolishRec();
 
@@ -257,7 +243,7 @@ public class Solver {
         return (rec);
     }
     //ab*cde!*f*!*+r@r@f=f=f=f=fehr+t=t=!*+=g=
-    public static Node parsingTree(ArrayList<PolishRec>  r)
+    public Node parsingTree(ArrayList<PolishRec>  r)
     {
         int size;
         int p; 
@@ -296,7 +282,7 @@ public class Solver {
         return (tree);
     }
 
-    public static int helperTree(ArrayList<PolishRec> r)
+    public int helperTree(ArrayList<PolishRec> r)
     {
         int i = r.size() - 1;
 
@@ -310,7 +296,7 @@ public class Solver {
     }
 
 
-    public static Node nodeAdd(PolishRec r)
+    public Node nodeAdd(PolishRec r)
     {
         Node n = new Node();
 

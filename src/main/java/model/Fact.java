@@ -4,14 +4,13 @@ import java.util.ArrayList;
 
 public class Fact {
     private String name;
-    private boolean value;
     private boolean defined;
 
     private Tristate state;
 
 
     public Fact() {
-        value = false;
+        state = Tristate.UNDEF;
         defined = false;
         ArrayList<ArrayList<PolishRec>> definers;
     }
@@ -20,8 +19,8 @@ public class Fact {
         this.state = state;
     }
 
-    public void define(boolean value) {
-        this.value = value;
+    public void define(Tristate state) {
+        this.state = state;
         defined = true;
     }
 
@@ -32,7 +31,7 @@ public class Fact {
         if (!defined)
             stringValue = "undefined";
         else
-            stringValue = (new Boolean(value)).toString();
+            stringValue = state.toString();
 
         return String.format(
                 "%s - %s",
