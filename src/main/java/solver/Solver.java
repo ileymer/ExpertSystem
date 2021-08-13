@@ -1,11 +1,15 @@
 package solver;
 
+import app.Printer;
 import app.Utils;
 import model.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.stream.Stream;
+
+import static app.Printer.printFacts;
 
 
 public class Solver {
@@ -22,107 +26,115 @@ public class Solver {
     }
 
     public HashMap<String, Fact> getFactsFromLine(String line) {
-        HashMap<String, Fact> facts = new HashMap<>();
+        HashMap<String, Fact> getFacts = new HashMap<>();
 
         for (char c : line.toCharArray()) {
             if (Utils.isFact(c)) {
-                facts.put(String.valueOf(c), new Fact(Tristate.UNDEF));
+                getFacts.put(String.valueOf(c), facts.get(String.valueOf(c)));
             }
         }
-        return facts;
+        return getFacts;
     }
 
-    private boolean isAllFactsDefines(String left) {
-        for (String key : getFactsFromLine(left).keySet()) {
-            if (facts.get(key).state == Tristate.UNDEF) {
-                return false;
-            }
-        }
-        return true;
+    private boolean isAllFactsDefined() {
+        return facts.values().stream().filter(x -> x.defined == false).count() == 0;
     }
 
-
-
-    public void printFacts(HashMap<String, Fact> facts) {
-        facts.forEach((k, v) -> System.out.println(String.format("%s: %s", k, v.state)));
+    private boolean isTrueImplication(Tristate left, Tristate right) {
+        return !(left == Tristate.TRUE && right == Tristate.FALSE);
     }
 
-    private boolean isTrueImplication(boolean left, boolean right) {
-        return !(left == true && right == false);
-    }
-
-    private boolean isTrueIfAndOnlyIf(boolean left, boolean right) {
+    private boolean isTrueIfAndOnlyIf(Tristate left, Tristate right) {
         return left == right;
     }
 
-    /*
-    private void solveRule(Rule rule, HashMap<String, Tristate> temp) {
-        Node node = parsingTree(x.leftPart);
-        if (x.type == EquityType.IMPLICATION && isAllFactsDefines(x.leftPartString)) {
-            System.out.println(node);
-            solve(x.leftPart);
-            if (!x.onlyLeft) {
-                solve(x.rightPart);
+
+    public Tristate getState(String strFact) {
+        Fact fact = facts.get(strFact);
+        if (fact.state == Tristate.UNDEF) {
+            for (Definer definer : fact.definers) {
+                if (!definer.visited) {
+                    Tristate temp = solve(definer.rec);
+                    if (temp != Tristate.UNDEF) {
+                        fact.state = temp;
+                    }
+                    definer.visited = true;
+                }
+
             }
-        }});
+        }
+        return fact.state;
     }
-*/
-    public void setDefiners() {
-        for (String fact : fileContent.initFacts) {
-            for (Rule rule : rules) {
-                if (rule.rightPartString.equals(fact)) {
-                    if (!facts.get(fact).definers.contains(rule.rightPartString)) {
-                        facts.get(fact).definers.add(rule.rightPart);
+
+    public void resetVisited() {
+        for (Fact fact : facts.values()) {
+            for (Definer definer : fact.definers) {
+                definer.visited = false;
+            }
+        }
+    }
+
+    public HashMap<String, Fact> getQueries() {
+        HashMap<String, Fact> temp = new HashMap<>(facts);
+
+        while (true) {
+            resetVisited();
+            for (String fact : facts.keySet()) {
+                getState(fact);
+            }
+            if (facts.equals(temp)) {
+                if (isAllFactsDefined()) {
+                    break;
+                }
+                for (Fact fact : facts.values()) {
+                    if (!fact.defined && !queries.contains(fact.name)) {
+                        fact.define(Tristate.FALSE);
+                        break;
+                    }
+                }
+                for (Fact fact : facts.values()) {
+                    if (!fact.defined) {
+                        fact.define(Tristate.FALSE);
+                        break;
                     }
                 }
             }
-        }
-    }
-
-    private void handleImplication(Rule rule) {
-        Tristate result = Operations.Imp(
-                solve(rule.leftPart),
-                solve(rule.rightPart)
-        );
-
-        if (result == Tristate.UNDEF) {
-
-        }
-    }
-
-    public void run() {
-        boolean cycle = true;
-        HashMap<String, Fact> temp = new HashMap<>(facts);
-        setDefiners();
-
-        while (cycle) {
-            for (Rule rule : rules) {
-                handle
-                if (rule.equityType == EquityType.IMPLICATION) {
-                    handleImplication(rule);
-                }
-                else if (rule.equityType == EquityType.IF_AND_ONLY_IF) {
-                    handleIfAndOnlyIf();
-                }
-            }
-            if (facts.equals(temp)) {
-                break;
-            }
             temp = new HashMap<>(facts);
         }
-        printFacts(facts);
+        for (Fact fact : facts.values()) {
+            if (!queries.contains(fact.name)) {
+                facts.remove(fact);
+            }
+        }
+        return facts;
+        //
     }
 
-    public Tristate solve(ArrayList<PolishRec> rec)
+    public void checkSolution() {
+        for (Rule rule : rules) {
+            if (rule.equityType == EquityType.IMPLICATION &&
+                    isTrueImplication(solve(rule.leftPart), solve(rule.rightPart)))
+                continue;
+            if (rule.equityType == EquityType.IF_AND_ONLY_IF &&
+                    isTrueIfAndOnlyIf(solve(rule.leftPart), solve(rule.rightPart)))
+                continue;
+            Printer.printFactsError(getFactsFromLine(rule.origin));
+            Printer.printError("logic error: there is a contradiction in facts. Start from this line: " + rule.origin);
+
+        }
+    }
+
+    private Tristate solve(ArrayList<PolishRec> rec)
     {
         ArrayList<Tristate>  stack =  new ArrayList<>();
         int i = 0;
 
         for (PolishRec s : rec)
         {
+            i = stack.size() - 1;
             if (Utils.isFact(s.rec.toCharArray()[0]))
             {
-                stack.add(facts.get(s.rec).state);
+                stack.add(getState(s.rec));
             }
             else
             {
@@ -147,6 +159,7 @@ public class Solver {
         }
         return stack.get(0);
     }
+
 
     //ab*cde!*f*!*+r@r@f=f=f=f=fehr+t=t=!*+=g=
     public Node parsingTree(ArrayList<PolishRec>  r)

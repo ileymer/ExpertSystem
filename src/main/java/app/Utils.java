@@ -1,12 +1,16 @@
 package app;
 
+import model.Fact;
+import model.Operations;
 import model.PolishRec;
+import model.Tristate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Utils {
     public static boolean isFact(String fact) {
-        return fact.charAt(0) >= 'A' && fact.charAt(0) <= 'Z';
+        return fact.charAt(0) >= 'A' && fact.charAt(0) <= 'Z' && fact.length() == 1;
     }
 
     public static boolean isFact(char fact) {
@@ -124,4 +128,7 @@ public class Utils {
         rec.rec = s;
         return (rec);
     }
+
+
+
 }

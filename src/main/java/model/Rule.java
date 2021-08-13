@@ -13,11 +13,13 @@ public class Rule {
     public boolean onlyLeft;
     public EquityType equityType;
     public RuleType ruleType;
+    public String origin;
 
     public Rule(String line) {
         String [] splitted = line.contains("<=>") ? line.split("<=>") : line.split("=>");
         equityType = line.contains("<=>") ? EquityType.IF_AND_ONLY_IF : EquityType.IMPLICATION;
         onlyLeft = false;
+        origin = line;
         leftPartString = splitted[0];
         rightPartString = splitted[1];
         leftPart = Utils.PolishNotation(splitted[0]);
@@ -28,7 +30,7 @@ public class Rule {
         }
         else if (equityType == EquityType.IF_AND_ONLY_IF) {
             if (Utils.isFact(leftPartString) && Utils.isFact(rightPartString)) {
-                ruleType = RuleType.BIDIRECT_DEFIFING;
+                ruleType = RuleType.BIDIRECT_DEFINING;
             }
             else if (Utils.isFact(leftPartString)) {
                 ruleType = RuleType.RIGHT_DEFINING;

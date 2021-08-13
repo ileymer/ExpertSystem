@@ -1,6 +1,7 @@
 package app;
 
 
+import model.Fact;
 import model.FileContent;
 import org.parboiled.Parboiled;
 import model.Rule;
@@ -18,16 +19,22 @@ import java.util.stream.Stream;
 public class Main {
 
     public static void main(String [] args) {
+
         if (args.length == 0) {
             System.out.println("No input file");
         }
         String filePath = args[0];
-        FileContent fileContent = (new FileParser()).getFileContent(filePath);
-        //"D + !A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D);
-        (new Solver(fileContent)).run();
+        run(filePath);
     }
 
-
+    public static void run(String filePath) {
+        FileContent fileContent = (new FileParser()).getFileContent(filePath);
+        //"D + !A + B | C + E + D + !(A + B | C + E + D) + A + B | C + E + !D + A + B | C + E + D + !(A + B | C + E + D);
+        Solver solver = new Solver(fileContent);
+        HashMap<String, Fact> queries = solver.getQueries();
+        solver.checkSolution();
+        queries.keySet().stream().forEach(x-> System.out.println(x));
+    }
 
     public static LinkedList<String> testLines() {
         LinkedList<String> lines = new LinkedList<>();

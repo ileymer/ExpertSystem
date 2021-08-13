@@ -2,7 +2,7 @@ package app;
 
 import org.junit.jupiter.api.Test;
 
-public class ValidationTest {
+public class ValidValidationTest {
 
     @Test
     public void ParsingValidationTest() {

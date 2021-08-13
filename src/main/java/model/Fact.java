@@ -1,45 +1,36 @@
 package model;
 
+import app.Utils;
+
 import java.security.cert.TrustAnchor;
 import java.util.ArrayList;
 
 public class Fact {
-    private String name;
+    public String name;
     public boolean defined;
-    public ArrayList<ArrayList<PolishRec>> definers;
+    public ArrayList<Definer> definers;
     public Tristate state;
 
 
     public Fact() {
         state = Tristate.UNDEF;
         defined = false;
-        ArrayList<ArrayList<PolishRec>> definers;
+        definers = new ArrayList<>();;
     }
 
-    public Fact(Tristate state) {
-        this.state = state;
+    public Fact(String name) {
+        this.state = Tristate.UNDEF;
+        definers = new ArrayList<>();
+        this.name = name;
     }
 
     public void define(Tristate state) {
         this.state = state;
         defined = true;
+        ;
     }
 
-    public Tristate getState() {
-        if (state == Tristate.UNDEF) {
-            for (ArrayList<PolishRec> definer : definers) {
-                if (!definer.isVisited) {
-                    Tristate temp = solve(definer);
-                    if (temp != Tristate.UNDEF) {
 
-                    }
-                    definer.isVisited = true;
-                }
-
-            }
-        }
-        return state;
-    }
 
     @Override
     public String toString() {
