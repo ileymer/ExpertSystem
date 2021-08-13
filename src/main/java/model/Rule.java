@@ -11,22 +11,31 @@ public class Rule {
     public String leftPartString;
     public String rightPartString;
     public boolean onlyLeft;
-    public EquityType type;
+    public EquityType equityType;
+    public RuleType ruleType;
 
     public Rule(String line) {
-        if (line.contains("<=>") || line.contains("=>")) {
-            String [] splitted = line.contains("<=>") ? line.split("<=>") : line.split("=>");
-            type = line.contains("<=>") ? EquityType.IF_AND_ONLY_IF : EquityType.IMPLICATION;
-            onlyLeft = false;
-            leftPartString = splitted[0];
-            rightPartString = splitted[1];
-            leftPart = Utils.PolishNotation(splitted[0]);
-            rightPart = Utils.PolishNotation(splitted[1]);
+        String [] splitted = line.contains("<=>") ? line.split("<=>") : line.split("=>");
+        equityType = line.contains("<=>") ? EquityType.IF_AND_ONLY_IF : EquityType.IMPLICATION;
+        onlyLeft = false;
+        leftPartString = splitted[0];
+        rightPartString = splitted[1];
+        leftPart = Utils.PolishNotation(splitted[0]);
+        rightPart = Utils.PolishNotation(splitted[1]);
+        ruleType = RuleType.EQUIATION;
+        if (equityType == EquityType.IMPLICATION && Utils.isFact(rightPartString)) {
+            ruleType = RuleType.LEFT_DEFINING;
         }
-        else {
-            onlyLeft = true;
-            leftPart = Utils.PolishNotation(line);
-            leftPartString = line;
+        else if (equityType == EquityType.IF_AND_ONLY_IF) {
+            if (Utils.isFact(leftPartString) && Utils.isFact(rightPartString)) {
+                ruleType = RuleType.BIDIRECT_DEFIFING;
+            }
+            else if (Utils.isFact(leftPartString)) {
+                ruleType = RuleType.RIGHT_DEFINING;
+            }
+            else if (Utils.isFact(rightPartString)) {
+                ruleType = RuleType.LEFT_DEFINING;
+            }
         }
     }
 }

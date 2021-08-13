@@ -3,10 +3,10 @@ package solver;
 import app.Utils;
 import model.*;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+
 
 public class Solver {
     HashMap<String, Fact> facts;
@@ -67,13 +67,44 @@ public class Solver {
         }});
     }
 */
+    public void setDefiners() {
+        for (String fact : fileContent.initFacts) {
+            for (Rule rule : rules) {
+                if (rule.rightPartString.equals(fact)) {
+                    if (!facts.get(fact).definers.contains(rule.rightPartString)) {
+                        facts.get(fact).definers.add(rule.rightPart);
+                    }
+                }
+            }
+        }
+    }
+
+    private void handleImplication(Rule rule) {
+        Tristate result = Operations.Imp(
+                solve(rule.leftPart),
+                solve(rule.rightPart)
+        );
+
+        if (result == Tristate.UNDEF) {
+
+        }
+    }
+
     public void run() {
         boolean cycle = true;
         HashMap<String, Fact> temp = new HashMap<>(facts);
-
+        setDefiners();
 
         while (cycle) {
-            rules.stream().forEach(x -> {solve(x.leftPart);});
+            for (Rule rule : rules) {
+                handle
+                if (rule.equityType == EquityType.IMPLICATION) {
+                    handleImplication(rule);
+                }
+                else if (rule.equityType == EquityType.IF_AND_ONLY_IF) {
+                    handleIfAndOnlyIf();
+                }
+            }
             if (facts.equals(temp)) {
                 break;
             }
@@ -89,8 +120,7 @@ public class Solver {
 
         for (PolishRec s : rec)
         {
-            i = stack.size() - 1;
-            if (s.rec.toCharArray()[0] >= 'A' && s.rec.toCharArray()[0] <= 'Z')
+            if (Utils.isFact(s.rec.toCharArray()[0]))
             {
                 stack.add(facts.get(s.rec).state);
             }
@@ -113,26 +143,10 @@ public class Solver {
                     stack.set(i - 1, stack.set(i,  Operations.Xor(stack.get(i - 1), stack.get(i))));
                     stack.remove(i);
                 }
-                else if (s.rec == "=>")
-                {
-                    stack.set(i - 1, stack.set(i,  Operations.Imp(stack.get(i - 1), stack.get(i))));
-                    stack.remove(i);
-                }
-                else if (s.rec == "<=>")
-                {
-                    stack.set(i - 1, stack.set(i,  Operations.Eqv(stack.get(i - 1), stack.get(i))));
-                    stack.remove(i);
-                }
             }
         }
         return stack.get(0);
     }
-
-
-
-
-
-
 
     //ab*cde!*f*!*+r@r@f=f=f=f=fehr+t=t=!*+=g=
     public Node parsingTree(ArrayList<PolishRec>  r)

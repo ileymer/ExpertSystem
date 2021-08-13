@@ -38,8 +38,6 @@ public class Main {
         return lines;
     }
 
-
-
     public static void runParserExample() {
         String input = "A+B+C=>B+C";
         RuleParser parser = new RuleParser(Parboiled.createParser(RuleParser.class));

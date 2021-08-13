@@ -23,7 +23,11 @@ public class FileParser {
     }
     private Optional<LinkedList<Rule>> getRules(LinkedList<String> lines) {
         LinkedList<Rule> rules = new LinkedList<>();
-        lines.stream().forEach(line -> rules.add(new Rule(line)));
+        lines.stream().forEach(line -> {
+            if (Utils.isFact(line.charAt(0))) {
+                rules.add(new Rule(line));
+            }
+         });
         return Optional.of(rules);
     }
 
@@ -66,7 +70,7 @@ public class FileParser {
         LinkedList<String> initFacts = new LinkedList<>();
 
         for (String line : lines) {
-            if (line.contains("=")) {
+            if (line.startsWith("=")) {
                 line = line.split("=")[1];
                 for (char c : line.toCharArray()) {
                     initFacts.add(String.valueOf(c));
@@ -89,7 +93,7 @@ public class FileParser {
         });
         LinkedList<String> list = new LinkedList<>();
         for (String s : facts) {
-            lines.add(s);
+            list.add(s);
         }
         return list;
     }

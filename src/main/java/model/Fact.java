@@ -1,11 +1,12 @@
 package model;
 
+import java.security.cert.TrustAnchor;
 import java.util.ArrayList;
 
 public class Fact {
     private String name;
     public boolean defined;
-
+    public ArrayList<ArrayList<PolishRec>> definers;
     public Tristate state;
 
 
@@ -22,6 +23,22 @@ public class Fact {
     public void define(Tristate state) {
         this.state = state;
         defined = true;
+    }
+
+    public Tristate getState() {
+        if (state == Tristate.UNDEF) {
+            for (ArrayList<PolishRec> definer : definers) {
+                if (!definer.isVisited) {
+                    Tristate temp = solve(definer);
+                    if (temp != Tristate.UNDEF) {
+
+                    }
+                    definer.isVisited = true;
+                }
+
+            }
+        }
+        return state;
     }
 
     @Override
