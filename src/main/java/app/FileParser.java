@@ -87,6 +87,10 @@ public class FileParser {
                 }
             }
         });
-        return (LinkedList<String>)facts.stream().collect(Collectors.toList());
+        LinkedList<String> list = new LinkedList<>();
+        for (String s : facts) {
+            lines.add(s);
+        }
+        return list;
     }
 }
