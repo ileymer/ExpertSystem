@@ -56,7 +56,7 @@ public class Solver {
                 if (!definer.visited) {
                     Tristate temp = solve(definer.rec);
                     if (temp != Tristate.UNDEF) {
-                        fact.state = temp;
+                        fact.define(temp);
                     }
                     definer.visited = true;
                 }

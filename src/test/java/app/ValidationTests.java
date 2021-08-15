@@ -1,6 +1,6 @@
 package app;
 
-import com.sun.tools.javac.util.Assert;
+
 import model.Fact;
 
 import java.io.File;
@@ -30,13 +30,5 @@ public class ValidationTests {
     }
 
     final File folder = new File("test_cases/valid");
-    listFilesForFolder(folder);
 
-    public void ValidLogicTest() {
-        temp =
-    }
-        Assert.
-        AssertionError();
-        AssertionError();
-        AssertionError();
 }
