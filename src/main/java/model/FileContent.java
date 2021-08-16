@@ -53,12 +53,12 @@ public class FileContent {
                 continue;
             if (Utils.isFact(rule.rightPartString) || Utils.isFact(rule.leftPartString)) {
                 if (rule.ruleType == RuleType.BIDIRECT_DEFINING) {
-                    facts.get(rule.rightPartString).definers.add(new Definer(rule.leftPart));
-                    facts.get(rule.leftPartString).definers.add(new Definer(rule.rightPart));
+                    facts.get(rule.rightPartString).definers.add(new Definer(rule.leftPart, rule.leftPartString));
+                    facts.get(rule.leftPartString).definers.add(new Definer(rule.rightPart, rule.rightPartString));
                 } else if (rule.ruleType == RuleType.LEFT_DEFINING) {
-                    facts.get(rule.rightPartString).definers.add(new Definer(rule.leftPart));
+                    facts.get(rule.rightPartString).definers.add(new Definer(rule.leftPart, rule.leftPartString));
                 } else if (rule.ruleType == RuleType.RIGHT_DEFINING) {
-                    facts.get(rule.leftPartString).definers.add(new Definer(rule.rightPart));
+                    facts.get(rule.leftPartString).definers.add(new Definer(rule.rightPart, rule.rightPartString));
                 }
             }
         }

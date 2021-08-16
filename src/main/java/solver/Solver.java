@@ -52,8 +52,10 @@ public class Solver {
     public Tristate getState(String strFact) {
         Fact fact = facts.get(strFact);
         if (fact.state == Tristate.UNDEF) {
+            Printer.printVerbose(String.format("Variable \"%s\" is undefined. Lets check definers", strFact));
             for (Definer definer : fact.definers) {
                 if (!definer.visited) {
+                    Printer.printVerbose(String.format("Definer \"%s\" is not visited, visiting the definer", definer.origin), 1);
                     Tristate temp = solve(definer.rec);
                     if (temp != Tristate.UNDEF) {
                         fact.define(temp);
@@ -77,10 +79,15 @@ public class Solver {
     public HashMap<String, Fact> getQueries() {
         HashMap<String, Fact> temp = new HashMap<>(facts);
 
+        Printer.printVerbose("\nWe need to find these variables: ");
+        queries.stream().forEach(x -> Printer.printVerbose(x));
+        Printer.printVerbose("");
+
         while (true) {
             resetVisited();
-            for (String fact : facts.keySet()) {
-                getState(fact);
+            for (String query : queries) {
+                Printer.printVerbose(String.format("Getting state of \"%s\" variable:", query));
+                getState(query);
             }
             if (facts.equals(temp)) {
                 if (isAllFactsDefined()) {
