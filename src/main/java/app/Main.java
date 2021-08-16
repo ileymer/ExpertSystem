@@ -1,29 +1,37 @@
 package app;
 
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.Parameters;
 import model.Fact;
 import model.FileContent;
 import org.parboiled.Parboiled;
-import model.Rule;
 import solver.Solver;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+@Parameters(separators = "=")
 public class Main {
+    @Parameter(names={"--verbose", "-v"})
+    static boolean verboseMode;
 
-    public static void main(String [] args) {
+    @Parameter(names={"--path", "-p"}, required = true)
+    static String filePath;
+
+    public static void main(String[] args) {
+        JCommander jCommander = new JCommander(new Main());
+        try {
+            jCommander.parse(args);
+        } catch (ParameterException e) {
+            Printer.printError("The following options are required: [--path], [--verbose]");
+        }
+
 
         if (args.length == 0) {
             System.out.println("No input file");
         }
-        String filePath = args[0];
         run(filePath);
     }
 

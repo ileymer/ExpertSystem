@@ -20,4 +20,10 @@ public class Printer {
     public static void printFactsError(HashMap<String, Fact> facts) {
         facts.forEach((k, v) -> System.err.println(String.format("%s: %s", k, v.state)));
     }
+
+    public static void printVerbose(String s ) {
+        if (Main.verboseMode) {
+            System.out.println(s);
+        }
+    }
 }
