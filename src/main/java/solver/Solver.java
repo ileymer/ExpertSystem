@@ -13,10 +13,11 @@ import static app.Printer.printFacts;
 
 
 public class Solver {
-    HashMap<String, Fact> facts;
-    LinkedList<String> queries;
-    LinkedList<Rule> rules;
-    FileContent fileContent;
+    public HashMap<String, Fact> facts;
+    public LinkedList<String> queries;
+    public LinkedList<Rule> rules;
+    public FileContent fileContent;
+    public HashMap <String, Expression> expressions;
 
     public Solver(FileContent fileContent) {
         this.fileContent = fileContent;
@@ -51,14 +52,18 @@ public class Solver {
 
     public Tristate getState(String strFact) {
         Fact fact = facts.get(strFact);
+        Printer.printVerbose(String.format("Variable \"%s\" = %s", strFact, fact.state.toString()));
         if (fact.state == Tristate.UNDEF) {
-            Printer.printVerbose(String.format("Variable \"%s\" is undefined. Lets check definers", strFact));
+            Printer.printVerbose(String.format("Lets check definers", strFact));
             for (Definer definer : fact.definers) {
                 if (!definer.visited) {
                     Printer.printVerbose(String.format("Definer \"%s\" is not visited, visiting the definer", definer.origin), 1);
                     Tristate temp = solve(definer.rec);
                     if (temp != Tristate.UNDEF) {
                         fact.define(temp);
+                        Printer.printVerbose(String.format(
+                                "Variable %s has been set to %s",
+                                fact.name, fact.state));
                     }
                     definer.visited = true;
                 }
@@ -99,6 +104,7 @@ public class Solver {
                         break;
                     }
                 }
+
                 for (Fact fact : facts.values()) {
                     if (!fact.defined) {
                         fact.define(Tristate.FALSE);
@@ -108,27 +114,48 @@ public class Solver {
             }
             temp = new HashMap<>(facts);
         }
+        return facts;
+    }
+
+    public HashMap<String, Fact> returnQueriesFromFacts() {
         for (Fact fact : facts.values()) {
             if (!queries.contains(fact.name)) {
                 facts.remove(fact);
             }
         }
         return facts;
-        //
     }
 
     public void checkSolution() {
         for (Rule rule : rules) {
             if (rule.equityType == EquityType.IMPLICATION &&
-                    isTrueImplication(solve(rule.leftPart), solve(rule.rightPart)))
+                    isTrueImplication(solve(rule.left.rec), solve(rule.right.rec)))
                 continue;
             if (rule.equityType == EquityType.IF_AND_ONLY_IF &&
-                    isTrueIfAndOnlyIf(solve(rule.leftPart), solve(rule.rightPart)))
+                    isTrueIfAndOnlyIf(solve(rule.left.rec), solve(rule.right.rec)))
                 continue;
             Printer.printFactsError(getFactsFromLine(rule.origin));
             Printer.printError("logic error: there is a contradiction in facts. Start from this line: " + rule.origin);
 
         }
+    }
+
+    private boolean isUniqueUndefinedQuery(Expression expression) {
+        return
+    }
+
+    private LinkedList<Fact> getUndefinedQueriesFromExpression(Expression expression) {
+        LinkedList<Fact> queriesFromExpression = new LinkedList<>();
+        for (String symbol : expression.origin.split("")) {
+            if (queries.contains(symbol)) {
+                Fact temp = facts.get(symbol);
+                if (temp.state == Tristate.UNDEF) {
+                    queriesFromExpression.add(temp);
+                }
+
+            }
+        }
+        return queriesFromExpression;
     }
 
     private Tristate solve(ArrayList<PolishRec> rec)

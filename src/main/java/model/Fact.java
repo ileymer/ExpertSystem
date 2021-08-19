@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Fact {
     public String name;
     public boolean defined;
-    public ArrayList<Definer> definers;
+    public ArrayList<Expression> definers;
     public Tristate state;
 
 

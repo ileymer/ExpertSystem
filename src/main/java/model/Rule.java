@@ -6,11 +6,8 @@ import solver.Solver;
 import java.util.ArrayList;
 
 public class Rule {
-    public ArrayList <PolishRec> leftPart;
-    public ArrayList <PolishRec> rightPart;
-    public String leftPartString;
-    public String rightPartString;
-    public boolean onlyLeft;
+    public Expression left;
+    public Expression right;
     public EquityType equityType;
     public RuleType ruleType;
     public String origin;
@@ -18,24 +15,21 @@ public class Rule {
     public Rule(String line) {
         String [] splitted = line.contains("<=>") ? line.split("<=>") : line.split("=>");
         equityType = line.contains("<=>") ? EquityType.IF_AND_ONLY_IF : EquityType.IMPLICATION;
-        onlyLeft = false;
         origin = line;
-        leftPartString = splitted[0];
-        rightPartString = splitted[1];
-        leftPart = Utils.PolishNotation(splitted[0]);
-        rightPart = Utils.PolishNotation(splitted[1]);
+        left = new Expression(splitted[0]);
+        right = new Expression(splitted[1]);
         ruleType = RuleType.EQUIATION;
-        if (equityType == EquityType.IMPLICATION && Utils.isFact(rightPartString)) {
+        if (equityType == EquityType.IMPLICATION && Utils.isFact(right.origin)) {
             ruleType = RuleType.LEFT_DEFINING;
         }
         else if (equityType == EquityType.IF_AND_ONLY_IF) {
-            if (Utils.isFact(leftPartString) && Utils.isFact(rightPartString)) {
+            if (Utils.isFact(left.origin) && Utils.isFact(right.origin)) {
                 ruleType = RuleType.BIDIRECT_DEFINING;
             }
-            else if (Utils.isFact(leftPartString)) {
+            else if (Utils.isFact(left.origin)) {
                 ruleType = RuleType.RIGHT_DEFINING;
             }
-            else if (Utils.isFact(rightPartString)) {
+            else if (Utils.isFact(right.origin)) {
                 ruleType = RuleType.LEFT_DEFINING;
             }
         }

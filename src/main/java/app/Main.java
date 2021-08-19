@@ -38,6 +38,7 @@ public class Main {
     public static void run(String filePath) {
         FileContent fileContent = (new FileParser()).getFileContent(filePath);
         Solver solver = new Solver(fileContent);
+
         Printer.printVerbose(String.format("%s\nStart processing\n%s",
                 "===================================",
                 "==================================="));
