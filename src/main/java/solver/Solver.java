@@ -4,9 +4,12 @@ import app.Printer;
 import app.Utils;
 import model.*;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static app.Printer.printFacts;
@@ -55,7 +58,7 @@ public class Solver {
         Printer.printVerbose(String.format("Variable \"%s\" = %s", strFact, fact.state.toString()));
         if (fact.state == Tristate.UNDEF) {
             Printer.printVerbose(String.format("Lets check definers", strFact));
-            for (Definer definer : fact.definers) {
+            for (Expression definer : fact.definers) {
                 if (!definer.visited) {
                     Printer.printVerbose(String.format("Definer \"%s\" is not visited, visiting the definer", definer.origin), 1);
                     Tristate temp = solve(definer.rec);
@@ -75,8 +78,8 @@ public class Solver {
 
     public void resetVisited() {
         for (Fact fact : facts.values()) {
-            for (Definer definer : fact.definers) {
-                definer.visited = false;
+            for (Expression expression : fact.definers) {
+                expression.visited = false;
             }
         }
     }
@@ -95,21 +98,17 @@ public class Solver {
                 getState(query);
             }
             if (facts.equals(temp)) {
-                if (isAllFactsDefined()) {
+                boolean tableSolved = false;
+                for (Rule rule : rules) {
+                    if (Utils.hasUndefinedFacts(rule, facts)) {
+                        solveTruthTable(rule, facts);
+                        tableSolved = true;
+                        checkSolution();
+                        break;
+                    }
+                }
+                if (!tableSolved) {
                     break;
-                }
-                for (Fact fact : facts.values()) {
-                    if (!fact.defined && !queries.contains(fact.name)) {
-                        fact.define(Tristate.FALSE);
-                        break;
-                    }
-                }
-
-                for (Fact fact : facts.values()) {
-                    if (!fact.defined) {
-                        fact.define(Tristate.FALSE);
-                        break;
-                    }
                 }
             }
             temp = new HashMap<>(facts);
@@ -117,13 +116,12 @@ public class Solver {
         return facts;
     }
 
-    public HashMap<String, Fact> returnQueriesFromFacts() {
-        for (Fact fact : facts.values()) {
-            if (!queries.contains(fact.name)) {
-                facts.remove(fact);
-            }
-        }
-        return facts;
+    public void solveTruthTable(Rule rule, HashMap<String, Fact> facts) {
+        LinkedList<Fact> undefined = Utils.getUndefinedFacts(rule, facts);
+
+        TruthTable table = new TruthTable(undefined);
+        System.out.println(table);
+        System.exit(1);
     }
 
     public void checkSolution() {
@@ -138,24 +136,6 @@ public class Solver {
             Printer.printError("logic error: there is a contradiction in facts. Start from this line: " + rule.origin);
 
         }
-    }
-
-    private boolean isUniqueUndefinedQuery(Expression expression) {
-        return
-    }
-
-    private LinkedList<Fact> getUndefinedQueriesFromExpression(Expression expression) {
-        LinkedList<Fact> queriesFromExpression = new LinkedList<>();
-        for (String symbol : expression.origin.split("")) {
-            if (queries.contains(symbol)) {
-                Fact temp = facts.get(symbol);
-                if (temp.state == Tristate.UNDEF) {
-                    queriesFromExpression.add(temp);
-                }
-
-            }
-        }
-        return queriesFromExpression;
     }
 
     private Tristate solve(ArrayList<PolishRec> rec)
@@ -192,75 +172,5 @@ public class Solver {
             }
         }
         return stack.get(0);
-    }
-
-
-    //ab*cde!*f*!*+r@r@f=f=f=f=fehr+t=t=!*+=g=
-    public Node parsingTree(ArrayList<PolishRec>  r)
-    {
-        int size;
-        int p; 
-        int sizeS = 0;
-        //ArrayList <Integer> stack = new ArrayList<>();
-        Node tree = new Node();
-        ArrayList <Node> stack = new ArrayList<>();
-
-        size = r.size() - 1;
-        r.get(size).visited = true;
-        stack.add(nodeAdd(r.get(size - 1)));
-        stack.add(nodeAdd(r.get(size - 2)));
-        tree.type = 2;
-        tree.children[0] = stack.get(0);
-        tree.children[1] = stack.get(1);
-        while (stack.size() != 0)
-        {
-            if (stack.get(0).type == 2)
-            {
-                p = helperTree(r);
-                stack.get(0).children[0] = nodeAdd(r.get(p));
-                p--;
-                stack.get(0).children[1] = nodeAdd(r.get(p));
-                stack.add(stack.get(0).children[0]);
-                stack.add(stack.get(0).children[1]);
-            }
-            else if (stack.get(0).type == 1)
-            {
-                p = helperTree(r);
-                stack.get(0).children[0] = nodeAdd(r.get(p));
-                stack.add(stack.get(0).children[0]);
-            }
-            stack.remove(0);
-
-        }
-        return (tree);
-    }
-
-    public int helperTree(ArrayList<PolishRec> r)
-    {
-        int i = r.size() - 1;
-
-        while (i >= 0)
-        {
-            if (r.get(i).visited == false)
-                return (i);
-            i--;
-        }
-        return (i);
-    }
-
-
-    public Node nodeAdd(PolishRec r)
-    {
-        Node n = new Node();
-
-        r.visited = true;
-        n.name = r.rec;
-        if (r.rec == "!")
-            n.type = 1;
-        else if (r.rec.toCharArray()[0] >= 'A' && r.rec.toCharArray()[0] <= 'Z')
-            n.type = 0;
-        else
-            n.type = 2;
-        return (n);
     }
 }

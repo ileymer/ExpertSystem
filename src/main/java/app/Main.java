@@ -28,7 +28,6 @@ public class Main {
             Printer.printError("The following options are required: [--path], [--verbose]");
         }
 
-
         if (args.length == 0) {
             System.out.println("No input file");
         }
@@ -44,6 +43,6 @@ public class Main {
                 "==================================="));
         HashMap<String, Fact> queries = solver.getQueries();
         solver.checkSolution();
-        queries.keySet().stream().forEach(x-> System.out.println(x));
+        queries.keySet().stream().forEach(x-> System.out.println(String.format("%s: %s", x, queries.get(x).state)));
     }
 }

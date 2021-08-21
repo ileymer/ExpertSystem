@@ -1,12 +1,12 @@
 package app;
 
-import model.Fact;
-import model.Operations;
-import model.PolishRec;
-import model.Tristate;
+import model.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 public class Utils {
     public static boolean isFact(String fact) {
@@ -119,8 +119,6 @@ public class Utils {
         return (0);
     }
 
-
-
     private static PolishRec strPolish(String s)
     {
         PolishRec rec = new PolishRec();
@@ -129,6 +127,17 @@ public class Utils {
         return (rec);
     }
 
+    private void copyFacts(HashMap<String, Fact> facts) {
 
+    }
+    public static boolean hasUndefinedFacts(Rule rule, HashMap<String, Fact> facts) {
+        return facts.values().stream()
+                .filter(x -> rule.origin.contains(x.name) && x.state == Tristate.UNDEF).count() > 0;
+    }
 
+    public static LinkedList<Fact> getUndefinedFacts(Rule rule, HashMap<String, Fact> facts) {
+        return facts.values().stream()
+                .filter(x -> rule.origin.contains(x.name) && x.state == Tristate.UNDEF)
+                .collect(Collectors.toCollection(LinkedList<Fact>::new));
+    }
 }

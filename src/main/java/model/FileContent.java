@@ -42,9 +42,6 @@ public class FileContent {
             if (initFacts.contains(factName)) {
                 facts.get(factName).define(Tristate.TRUE);
             }
-            else {
-                facts.get(factName).define(Tristate.FALSE);
-            }
         }
         return facts;
     }
@@ -56,12 +53,12 @@ public class FileContent {
                 continue;
             if (Utils.isFact(rule.right.origin) || Utils.isFact(rule.left.origin)) {
                 if (rule.ruleType == RuleType.BIDIRECT_DEFINING) {
-                    facts.get(rule.right.origin).definers.add(new Definer(rule.left.rec, rule.left.origin));
-                    facts.get(rule.left.origin).definers.add(new Definer(rule.right.rec, rule.right.origin));
+                    facts.get(rule.right.origin).definers.add(new Expression(rule.left.origin));
+                    facts.get(rule.left.origin).definers.add(new Expression(rule.right.origin));
                 } else if (rule.ruleType == RuleType.LEFT_DEFINING) {
-                    facts.get(rule.right.origin).definers.add(new Definer(rule.left.rec, rule.left.origin));
+                    facts.get(rule.right.origin).definers.add(new Expression(rule.left.origin));
                 } else if (rule.ruleType == RuleType.RIGHT_DEFINING) {
-                    facts.get(rule.left.origin).definers.add(new Definer(rule.right.rec, rule.right.origin));
+                    facts.get(rule.left.origin).definers.add(new Expression(rule.right.origin));
                 }
             }
         }
