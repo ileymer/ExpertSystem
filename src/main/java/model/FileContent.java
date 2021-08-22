@@ -10,13 +10,16 @@ public class FileContent {
     public LinkedList<String> initFacts;
     public LinkedList<Rule> rules;
     public LinkedList<String> queries;
+    public LinkedList<String> lines;
 
     public FileContent(LinkedList<String> allFacts, LinkedList<String> initFacts,
-                       LinkedList<Rule> rules, LinkedList<String> queries) {
+                       LinkedList<Rule> rules, LinkedList<String> queries,
+                       LinkedList<String> lines) {
         this.allFacts = allFacts;
         this.initFacts = initFacts;
         this.rules = rules;
         this.queries = queries;
+        this.lines = lines;
     }
 
     public FileContent() {

@@ -1,8 +1,9 @@
-package solver;
+package app;
 
 import app.Printer;
 import app.Utils;
 import model.*;
+import sun.awt.image.ImageWatched;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class Solver {
     public LinkedList<Rule> rules;
     public FileContent fileContent;
     public HashMap <String, Expression> expressions;
+    public TruthTable solutions;
 
     public Solver(FileContent fileContent) {
         this.fileContent = fileContent;
@@ -40,7 +42,7 @@ public class Solver {
         return getFacts;
     }
 
-    private boolean isAllFactsDefined() {
+    public boolean isAllFactsDefined() {
         return facts.values().stream().filter(x -> x.defined == false).count() == 0;
     }
 
@@ -55,9 +57,9 @@ public class Solver {
 
     public Tristate getState(String strFact) {
         Fact fact = facts.get(strFact);
-        Printer.printVerbose(String.format("Variable \"%s\" = %s", strFact, fact.state.toString()));
+        //Printer.printVerbose(String.format("Variable \"%s\" = %s", strFact, fact.state.toString()));
         if (fact.state == Tristate.UNDEF) {
-            Printer.printVerbose(String.format("Lets check definers", strFact));
+            Printer.printVerbose(String.format("Lets check definers of \"%s\"", strFact));
             for (Expression definer : fact.definers) {
                 if (!definer.visited) {
                     Printer.printVerbose(String.format("Definer \"%s\" is not visited, visiting the definer", definer.origin), 1);
@@ -70,7 +72,9 @@ public class Solver {
                     }
                     definer.visited = true;
                 }
-
+            }
+            if (fact.definers.size() == 0) {
+                Printer.printVerbose("There are no definers");
             }
         }
         return fact.state;
@@ -86,6 +90,7 @@ public class Solver {
 
     public HashMap<String, Fact> getQueries() {
         HashMap<String, Fact> temp = new HashMap<>(facts);
+        HashMap<String, Fact> queriesDict = new HashMap<>();
 
         Printer.printVerbose("\nWe need to find these variables: ");
         queries.stream().forEach(x -> Printer.printVerbose(x));
@@ -98,33 +103,44 @@ public class Solver {
                 getState(query);
             }
             if (facts.equals(temp)) {
-                boolean tableSolved = false;
-                for (Rule rule : rules) {
-                    if (Utils.hasUndefinedFacts(rule, facts)) {
-                        solveTruthTable(rule, facts);
-                        tableSolved = true;
-                        checkSolution();
-                        break;
-                    }
-                }
-                if (!tableSolved) {
-                    break;
-                }
+                break ;
             }
             temp = new HashMap<>(facts);
         }
-        return facts;
+        facts.values().stream()
+                .filter(x -> queries.contains(x.name))
+                .forEach(x -> queriesDict.put(x.name, x));
+        return queriesDict;
     }
 
-    public void solveTruthTable(Rule rule, HashMap<String, Fact> facts) {
-        LinkedList<Fact> undefined = Utils.getUndefinedFacts(rule, facts);
+    public LinkedList<Fact> getUndefinedFacts() {
+        return facts.values().stream().filter(x -> x.defined == false)
+                .collect(Collectors.toCollection(LinkedList<Fact>::new));
+    }
 
+    public void solveTruthTable() {
+        LinkedList<Fact> undefined = getUndefinedFacts();
         TruthTable table = new TruthTable(undefined);
-        System.out.println(table);
-        System.exit(1);
+        solutions = new TruthTable(undefined);
+        solutions.dropAllRows();
+        HashMap<String, Fact> temp = new HashMap<>(facts);
+
+        for (LinkedList<Tristate> row : table.table) {
+            Utils.setFacts(temp, row, undefined);
+            if (isValidSolution()) {
+                solutions.addRow(row);
+            }
+        }
     }
 
     public void checkSolution() {
+        if (!isValidSolution()) {
+            Printer.printFactsError(facts);
+            Printer.printError("logic error: there is a contradiction in facts");
+        }
+    }
+
+    public boolean isValidSolution() {
         for (Rule rule : rules) {
             if (rule.equityType == EquityType.IMPLICATION &&
                     isTrueImplication(solve(rule.left.rec), solve(rule.right.rec)))
@@ -132,10 +148,9 @@ public class Solver {
             if (rule.equityType == EquityType.IF_AND_ONLY_IF &&
                     isTrueIfAndOnlyIf(solve(rule.left.rec), solve(rule.right.rec)))
                 continue;
-            Printer.printFactsError(getFactsFromLine(rule.origin));
-            Printer.printError("logic error: there is a contradiction in facts. Start from this line: " + rule.origin);
-
+            return false;
         }
+        return true;
     }
 
     private Tristate solve(ArrayList<PolishRec> rec)

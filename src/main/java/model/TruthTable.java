@@ -1,33 +1,30 @@
 package model;
 
+import sun.awt.image.ImageWatched;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 public class TruthTable {
-    LinkedList<Fact> undefined;
-    ArrayList<LinkedList<Boolean>> table;
+    public LinkedList<Fact> undefined;
+    public ArrayList<LinkedList<Tristate>> table;
 
     public TruthTable(LinkedList<Fact> undefined) {
         this.undefined = undefined;
         table = new ArrayList<>();
 
-        undefined.stream().forEach(System.out::print);
-        System.out.println();
-
         for (int i = 0; i < (int)Math.pow(2, undefined.size()); i++) {
-            LinkedList<Boolean> row = new LinkedList<>();
+            LinkedList<Tristate> row = new LinkedList<>();
             int j = undefined.size();
             String binary = Integer.toBinaryString(i);
             int binaryLen = binary.length();
             while (--j > -1) {
-                boolean factValue = binaryLen > 0 && binary.charAt(binaryLen - 1) == '1' ? true : false;
+                Tristate factValue = binaryLen > 0 && binary.charAt(binaryLen - 1) == '1' ? Tristate.TRUE : Tristate.FALSE;
                 binaryLen--;
-                row.addFirst(new Boolean(factValue));
-                System.out.print(String.format("%s ", factValue));
+                row.addFirst(factValue);
             }
             table.add(row);
-            System.out.println();
         }
     }
 
@@ -41,7 +38,7 @@ public class TruthTable {
         }
         builder.append('\n');
 
-        for (LinkedList<Boolean> row : table) {
+        for (LinkedList<Tristate> row : table) {
             for (int i = 0; i < row.size(); i++) {
                 builder.append(String.format(format, row.get(i).toString()));
             }
@@ -50,4 +47,13 @@ public class TruthTable {
         return builder.toString();
     }
 
+    public void addRow(LinkedList<Tristate>row) {
+        table.add(row);
+    }
+
+    public void dropAllRows() {
+        while (table.size() > 0) {
+            table.remove(0);
+        }
+    }
 }

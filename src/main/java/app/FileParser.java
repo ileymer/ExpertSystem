@@ -13,14 +13,25 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FileParser {
-    public FileContent getFileContent(String filePath) {
-        LinkedList<String> lines = getLines(filePath).orElse(new LinkedList<>());
+    public FileContent getFileContent(LinkedList<String> lines) {
+        Validator.validate(lines);
         LinkedList<Rule> rules = getRules(lines).orElse(new LinkedList<>());
         LinkedList<String> allFacts = getAllFacts(lines);
         LinkedList<String> initFacts = getInitFacts(lines);
         LinkedList<String> queries = getQueries(lines);
-        return new FileContent(allFacts, initFacts, rules, queries);
+        return new FileContent(allFacts, initFacts, rules, queries, lines);
     }
+
+    public FileContent getFileContent(String filePath) {
+        LinkedList<String> lines = getLines(filePath).orElse(new LinkedList<>());
+        Validator.validate(lines);
+        LinkedList<Rule> rules = getRules(lines).orElse(new LinkedList<>());
+        LinkedList<String> allFacts = getAllFacts(lines);
+        LinkedList<String> initFacts = getInitFacts(lines);
+        LinkedList<String> queries = getQueries(lines);
+        return new FileContent(allFacts, initFacts, rules, queries, lines);
+    }
+
     private Optional<LinkedList<Rule>> getRules(LinkedList<String> lines) {
         LinkedList<Rule> rules = new LinkedList<>();
         lines.stream().forEach(line -> {
@@ -43,7 +54,7 @@ public class FileParser {
                             .replace("\t", ""))
                     .filter(line -> !line.equals(""))
                     .collect(Collectors.toCollection(LinkedList::new));
-            Validator.validate(lines);
+
         } catch (IOException e) {
             System.out.println("Can't read file");
             System.exit(-1);
@@ -71,9 +82,12 @@ public class FileParser {
 
         for (String line : lines) {
             if (line.startsWith("=")) {
-                line = line.split("=")[1];
-                for (char c : line.toCharArray()) {
-                    initFacts.add(String.valueOf(c));
+                String [] splitted = line.split("=");
+                if (splitted.length > 1) {
+                    line = splitted[1];
+                    for (char c : line.toCharArray()) {
+                        initFacts.add(String.valueOf(c));
+                    }
                 }
                 break;
             }

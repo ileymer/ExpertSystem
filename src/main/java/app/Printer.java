@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import static com.diogonunes.jcolor.Ansi.colorize;
-import static com.diogonunes.jcolor.Attribute.GREEN_TEXT;
+import static com.diogonunes.jcolor.Attribute.*;
 
 public class Printer {
     private static int tabulationTimes = 0;
@@ -39,6 +39,22 @@ public class Printer {
 
     public static void printVerbose(String s, int tabTimes) {
         doPrintVerbose(s, tabTimes);
+    }
+
+    public static void printInteractive(String s) {
+        if (Main.interactiveMode) {
+            System.out.println(colorize(s, YELLOW_TEXT()));
+        }
+    }
+
+    public static void printInteractiveError(String s) {
+        if (Main.interactiveMode) {
+            System.out.println(colorize(String.format("Error: %s", s), RED_TEXT()));
+        }
+    }
+
+    public static void printInteractiveMenu() {
+        printInteractive("\nPlease choose the action:\n\t1. Run solver\n\t2. Modify input line\n\t3. Print input data\n\t4. Exit program\n");
     }
 
     private static void doPrintVerbose(String s, int tabTimes) {

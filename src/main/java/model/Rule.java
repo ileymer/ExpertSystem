@@ -1,9 +1,6 @@
 package model;
 
 import app.Utils;
-import solver.Solver;
-
-import java.util.ArrayList;
 
 public class Rule {
     public Expression left;
