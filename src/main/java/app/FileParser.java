@@ -42,16 +42,20 @@ public class FileParser {
         return Optional.of(rules);
     }
 
+    public String processLine(String line) {
+        return line.split("#")[0]
+                .trim()
+                .replace(" ", "")
+                .replace("\t", "");
+    }
+
     private Optional<LinkedList<String>> getLines(String filePath) {
         LinkedList<String> lines = null;
 
 
         try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
             lines = stream
-                    .map(line -> line.split("#")[0]
-                            .trim()
-                            .replace(" ", "")
-                            .replace("\t", ""))
+                    .map(this::processLine)
                     .filter(line -> !line.equals(""))
                     .collect(Collectors.toCollection(LinkedList::new));
 

@@ -73,7 +73,7 @@ public class Main {
                     continue;
                 }
                 Printer.printInteractive("Input new line content:");
-                String newLine = scanner.nextLine();
+                String newLine = (new FileParser()).processLine(scanner.nextLine());
                 if (newLine.isEmpty()) {
                     Printer.printInteractive("Empty input. The line isn't modified");
                 }
@@ -89,6 +89,7 @@ public class Main {
             }
             else if (input == 4) {
                 Printer.printInteractive("Exit the program");
+                System.exit(0);
             }
             else {
                 Printer.printInteractive("No menu option for this value");
