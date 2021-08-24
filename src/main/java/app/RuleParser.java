@@ -1,6 +1,7 @@
 package app;
 
 import org.parboiled.BaseParser;
+import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.parserunners.ReportingParseRunner;
@@ -24,40 +25,24 @@ class RuleParser extends BaseParser<Object> {
 
     public String getRule(String input) {
         String parsed = "";
-        try {
-            parsed = parse(input);
-        } catch (ParseException e) {
-            System.err.println(e.getMessage());
-            System.exit(-1);
-        }
+        parsed = parse(input);
         return parsed;
     }
 
-    public String parse(String input) throws ParseException {
+    public RuleParser() {
+    }
+
+    public String parse(String input) {
         ParsingResult<?> result = new ReportingParseRunner(parser.Expression()).run(input);
         String parsed = ParseTreeUtils.printNodeTree(result);
         if (parsed == "") {
-            throw new ParseException("parsing error: invalid format", 0);
+            return parsed;
         }
         parsed = parsed.split("\n")[0]
                 .split(" ")[1]
                 .replace("\'", "");
-        if (!parsed.equals(input)) {
-            int i = -1;
-            int length = Math.min(parsed.length(), input.length());
-            while (++i < length) {
-                if (parsed.charAt(i) != input.charAt(i)) {
-                    break ;
-                }
-            }
-            throw new ParseException(String.format(
-                    "invalid character at position %d: %c",
-                    i, input.charAt(i)), i);
-        }
         return parsed;
     }
-
-    public RuleParser() {}
 
     Rule Expression() {
         return Sequence(
@@ -87,7 +72,7 @@ class RuleParser extends BaseParser<Object> {
     Rule Term() {
         return FirstOf(
                 VariableWithNegative(),
-                Sequence('(', Line(), ')')
+                Sequence(Optional(Ch('!')),'(', Line(), ')')
         );
     }
 

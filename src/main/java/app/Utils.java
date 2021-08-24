@@ -136,10 +136,13 @@ public class Utils {
     }
 
     public static void setFacts(HashMap<String, Fact>facts, LinkedList<Tristate>toSet, LinkedList<Fact>undefined) {
+
         for (int i = 0; i < undefined.size(); i++) {
             if (facts.containsKey(undefined.get(i).name)) {
                 facts.get(undefined.get(i).name).state = toSet.get(i);
+            Printer.printVerboseNoNewline(String.format("%s: %s\t", undefined.get(i).name, facts.get(undefined.get(i).name).state));
             }
         }
+        Printer.printVerbose("\n");
     }
 }

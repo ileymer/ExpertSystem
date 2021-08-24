@@ -1,16 +1,18 @@
 package app;
 
 import model.Fact;
+import model.Rule;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Locale;
 
 import static com.diogonunes.jcolor.Ansi.colorize;
 import static com.diogonunes.jcolor.Attribute.*;
 
 public class Printer {
-    private static int tabulationTimes = 0;
+    private static int indent = 0;
 
     public static void printError(String message)
     {
@@ -22,20 +24,23 @@ public class Printer {
         facts.forEach((k, v) -> System.out.println(String.format("%s: %s", k, v.state)));
     }
 
-    private static void decreaseTabTimes(int n) {
-        tabulationTimes -= n;
-        if (tabulationTimes < 0) {
-            tabulationTimes = 0;
-        }
+    public static void setIndent(int n) {
+        indent = n;
     }
 
-    public static void printFactsError(HashMap<String, Fact> facts) {
+    public static void printError(HashMap<String, Fact> facts) {
         facts.forEach((k, v) -> System.err.println(String.format("%s: %s", k, v.state)));
+    }
+
+    public static void printError(LinkedList<Rule> rules) {
+        rules.forEach(System.err::println);
     }
 
     public static void printVerbose(String s ) {
         doPrintVerbose(s, 0);
     }
+
+
 
     public static void printVerbose(String s, int tabTimes) {
         doPrintVerbose(s, tabTimes);
@@ -54,13 +59,23 @@ public class Printer {
     }
 
     public static void printInteractiveMenu() {
-        printInteractive("\nPlease choose the action:\n\t1. Run solver\n\t2. Modify input line\n\t3. Print input data\n\t4. Exit program\n");
+        printInteractive("\nPlease choose the action:\n" +
+                "\t1. Run solver\n" +
+                "\t2. Modify input line\n" +
+                "\t3. Add input line\n" +
+                "\t4. Delete input line\n" +
+                "\t5. Print input lines\n" +
+                "\t6. Exit\n");
+    }
+
+    public static void  printVerboseNoNewline(String s) {
+        System.out.print(colorize(s, GREEN_TEXT()));
     }
 
     private static void doPrintVerbose(String s, int tabTimes) {
         if (Main.verboseMode) {
-            tabulationTimes += tabTimes;
-            int temp = tabulationTimes;
+            indent += tabTimes;
+            int temp = indent;
             while (temp-- > 0) {
                 System.out.print("\t");
             }

@@ -57,7 +57,7 @@ public class Solver {
 
     public Tristate getState(String strFact) {
         Fact fact = facts.get(strFact);
-        //Printer.printVerbose(String.format("Variable \"%s\" = %s", strFact, fact.state.toString()));
+        Printer.printVerbose(String.format("Getting state of \"%s\" variable: \"%s\" = %s", strFact, strFact, fact.state.toString()));
         if (fact.state == Tristate.UNDEF) {
             Printer.printVerbose(String.format("Lets check definers of \"%s\"", strFact));
             for (Expression definer : fact.definers) {
@@ -99,7 +99,6 @@ public class Solver {
         while (true) {
             resetVisited();
             for (String query : queries) {
-                Printer.printVerbose(String.format("Getting state of \"%s\" variable:", query));
                 getState(query);
             }
             if (facts.equals(temp)) {
@@ -121,11 +120,17 @@ public class Solver {
     public void solveTruthTable() {
         LinkedList<Fact> undefined = getUndefinedFacts();
         TruthTable table = new TruthTable(undefined);
+        Printer.setIndent(0);
+        Printer.printVerbose("\nThe truthtable for undefined facts:\n");
+        Printer.printVerbose(table.toString());
+
         solutions = new TruthTable(undefined);
         solutions.dropAllRows();
         HashMap<String, Fact> temp = new HashMap<>(facts);
 
         for (LinkedList<Tristate> row : table.table) {
+
+            Printer.printVerbose("\n\nChecking the solution:");
             Utils.setFacts(temp, row, undefined);
             if (isValidSolution()) {
                 solutions.addRow(row);
@@ -135,8 +140,10 @@ public class Solver {
 
     public void checkSolution() {
         if (!isValidSolution()) {
-            Printer.printFactsError(facts);
-            Printer.printError("logic error: there is a contradiction in facts");
+            Printer.printError(facts);
+            Printer.printError(rules);
+            Printer.printError("logic error: there is a contradiction in facts. Check rules");
+
         }
     }
 

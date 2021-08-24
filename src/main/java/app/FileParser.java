@@ -43,13 +43,18 @@ public class FileParser {
     }
 
     public String processLine(String line) {
-        return line.split("#")[0]
-                .trim()
+        if (line.contains("#")) {
+            if (line.charAt(0) == '#') {
+                return "";
+            }
+            line = (line.split("#"))[0];
+        }
+        return line.trim()
                 .replace(" ", "")
                 .replace("\t", "");
     }
 
-    private Optional<LinkedList<String>> getLines(String filePath) {
+    public Optional<LinkedList<String>> getLines(String filePath) {
         LinkedList<String> lines = null;
 
 
@@ -59,8 +64,8 @@ public class FileParser {
                     .filter(line -> !line.equals(""))
                     .collect(Collectors.toCollection(LinkedList::new));
 
-        } catch (IOException e) {
-            System.out.println("Can't read file");
+        } catch (java.io.IOException e) {
+            System.err.println("Can't read file");
             System.exit(-1);
         }
         return Optional.of(lines);
