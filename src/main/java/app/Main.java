@@ -145,7 +145,7 @@ public class Main {
                 }
             }
             else if (input == 6) {
-                Printer.printInteractive("Exit the program...");
+                Printer.printInteractive("Exiting the program...");
                 System.exit(0);
             }
             else {
